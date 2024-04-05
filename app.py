@@ -8,7 +8,7 @@ app.secret_key = 'your_secret_key'  # Change this to a secure secret key
 conn = pymysql.connect(
     host='localhost',
     user='root',
-    password='wasd',
+    password='Chinu139*',
     database='ecom',
     cursorclass=pymysql.cursors.DictCursor
 )
@@ -85,7 +85,7 @@ def a_home():
 @app.route('/orders')
 def orders():
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM orders')
+    cursor.execute("SELECT * FROM orders")
     orders = cursor.fetchall()
     cursor.close()
     return render_template('orders.html', orders=orders)
@@ -115,15 +115,13 @@ def add_product():
         description = request.form['description']
         quantity = request.form['quantity']
         category = request.form['category']
-        item = request.form['item']
-        pcode = request.form['pcode']
-        picture = request.form['picture']
-        date = request.form['date']
+        picture_url = request.form['picture_url']
+        # date = request.form['date'] # Assuming you have a field named 'date' in your form
 
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO products (name, price, description, quantity, category, item, pcode, picture, date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                           (name, price, description, quantity, category, item, pcode, picture, date))
+            cursor.execute("INSERT INTO products (pName, price, description, quantity, category, picture_url) VALUES (%s, %s, %s, %s, %s, %s)",
+                           (name, price, description, quantity, category, picture_url))
             conn.commit()
             flash('Product added successfully!', 'success')
             return redirect(url_for('products'))
@@ -148,15 +146,13 @@ def edit_product(product_id):
         description = request.form['description']
         quantity = request.form['quantity']
         category = request.form['category']
-        item = request.form['item']
-        pcode = request.form['pcode']
-        picture = request.form['picture']
-        date = request.form['date']
+        picture_url = request.form['picture_url']
+        # date = request.form['date'] # Assuming you have a field named 'date' in your form
 
         cursor = conn.cursor()
         try:
-            cursor.execute("UPDATE products SET name = %s, price = %s, description = %s, quantity = %s, category = %s, item = %s, pcode = %s, picture = %s, date = %s WHERE id = %s",
-                           (name, price, description, quantity, category, item, pcode, picture, date, product_id))
+            cursor.execute("UPDATE products SET pName = %s, price = %s, description = %s, quantity = %s, category = %s, picture_url = %s WHERE id = %s",
+                           (name, price, description, quantity, category, picture_url, product_id))
             conn.commit()
             flash('Product updated successfully!', 'success')
             return redirect(url_for('products'))
@@ -169,7 +165,7 @@ def edit_product(product_id):
 
 @app.route('/delete_product/<int:product_id>', methods=['GET', 'POST'])
 def delete_product(product_id):
-    if request.method == 'POST':
+    if request.method == 'GET':
         cursor = conn.cursor()
         try:
             cursor.execute("DELETE FROM products WHERE id = %s", (product_id,))

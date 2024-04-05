@@ -1,34 +1,90 @@
-<!-- add_product.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Product</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+        input[type="text"],
+        textarea {
+            width: calc(100% - 20px); /* Adjust for padding */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .icon {
+            margin-right: 10px;
+        }
+    </style>
 </head>
 <body>
     <h1>Add Product</h1>
-    <form method="POST">
-        <label>Name:</label>
-        <input type="text" name="name" required><br><br>
-        <label>Price:</label>
-        <input type="text" name="price" required><br><br>
-        <label>Description:</label>
-        <textarea name="description" required></textarea><br><br>
-        <label>Quantity:</label>
-        <input type="text" name="quantity" required><br><br>
-        <label>Category:</label>
-        <input type="text" name="category" required><br><br>
-        <label>Item:</label>
-        <input type="text" name="item" required><br><br>
-        <label>Product Code:</label>
-        <input type="text" name="pcode" required><br><br>
-        <label>Picture:</label>
-        <input type="text" name="picture" required><br><br>
-        <label>Date:</label>
-        <input type="text" name="date" required><br><br>
+    <form method="POST" onsubmit="return confirmAdd()">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" placeholder="Enter product name" required><br>
+        
+        <label for="price">Price:</label>
+        <input type="text" id="price" name="price" placeholder="Enter product price" required><br>
+        
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" placeholder="Enter product description" required></textarea><br>
+        
+        <label for="quantity">Quantity:</label>
+        <input type="text" id="quantity" name="quantity" placeholder="Enter product quantity" required><br>
+        
+        <label for="category">Category:</label>
+        <input type="text" id="category" name="category" placeholder="Enter product category" required><br>
+        
+        <label for="picture_url">Picture URL:</label>
+        <input type="text" id="picture_url" name="picture_url" placeholder="Enter picture URL" required><br>
+        
         <input type="submit" value="Add Product">
     </form>
+    <script>
+        function confirmAdd() {
+            var result = confirm("Are you sure you want to add this product?");
+            return result;
+        }
+    </script>
 </body>
 </html>
