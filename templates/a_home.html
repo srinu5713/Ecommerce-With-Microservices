@@ -4,22 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('your_background_image_url');
+            background-size: cover;
+            color: white;
+            padding-top: 50px; /* Adjust as needed */
+        }
+        .summary {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 50px; /* Adjust as needed */
+        }
+        .card {
+            width: 250px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+        .card a {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+        }
+        .card p {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+        .logout-btn {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Admin Dashboard</h1>
-    <div class="summary">
-        <div class="card">
-            <a href="/orders">Orders</a>
-            <p>Total Orders: {{ orders_count }}</p>
+    <div class="container text-center">
+        <h1>Welcome to Admin Dashboard</h1>
+        <p>Manage your orders, users, and products here.</p>
+        <div class="summary">
+            <div class="card">
+                <a href="/orders">Orders</a>
+                <p>Total Orders: {{ orders_count }}</p>
+            </div>
+            <div class="card">
+                <a href="/users">Users</a>
+                <p>Total Users: {{ users_count }}</p>
+            </div>
+            <div class="card">
+                <a href="/products">Products</a>
+                <p>Total Products: {{ products_count }}</p>
+            </div>
         </div>
-        <div class="card">
-            <a href="/users">Users</a>
-            <p>Total Users: {{ users_count }}</p>
-        </div>
-        <div class="card">
-            <a href="/products">Products</a>
-            <p>Total Products: {{ products_count }}</p>
-        </div>
+        <!-- Logout button -->
+        <form id="logout-form" action="/logout" method="post" class="logout-btn">
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
     </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // JavaScript to submit the logout form
+        document.getElementById("logout-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+            this.submit(); // Submit the form
+        });
+    </script>
 </body>
 </html>

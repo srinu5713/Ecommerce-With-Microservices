@@ -13,6 +13,9 @@ conn = pymysql.connect(
     cursorclass=pymysql.cursors.DictCursor
 )
 
+a_is_logged_in=0
+u_is_logged_in=0
+
 @app.route('/')
 def index():
     return redirect(url_for('login'))
@@ -23,23 +26,22 @@ def login():
         email = request.form['email']
         password = request.form['password']
         cursor = conn.cursor()
-        cursor.execute('SELECT username FROM users WHERE email = %s AND password = %s', (email, password))
+        cursor.execute('SELECT username, user_type FROM users WHERE email = %s AND password = %s', (email, password))
         user = cursor.fetchone()
         cursor.close()
         if user:
-            cursor = conn.cursor()
-            cursor.execute('SELECT user_type FROM users WHERE email = %s', (email,))
-            user_type = cursor.fetchone()['user_type']
-            cursor.close()
-            if user_type == 'Admin':
+            if user['user_type'] == 'Admin':
                 return redirect(url_for('a_home'))
             else:
                 return redirect(url_for('u_home'))
         else:
             flash('Invalid email or password. Please try again.', 'error')
-            # Clear password field by passing empty string to the login.html template
-            return render_template('login.html', email=email, password='')
+            return render_template('login.html')  # Render login page again on failed login
     return render_template('login.html')
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    return redirect(url_for('login'))
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
