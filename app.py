@@ -23,23 +23,22 @@ def login():
         email = request.form['email']
         password = request.form['password']
         cursor = conn.cursor()
-        cursor.execute('SELECT username FROM users WHERE email = %s AND password = %s', (email, password))
+        cursor.execute('SELECT username, user_type FROM users WHERE email = %s AND password = %s', (email, password))
         user = cursor.fetchone()
         cursor.close()
         if user:
-            cursor = conn.cursor()
-            cursor.execute('SELECT user_type FROM users WHERE email = %s', (email,))
-            user_type = cursor.fetchone()['user_type']
-            cursor.close()
-            if user_type == 'Admin':
+            if user['user_type'] == 'Admin':
                 return redirect(url_for('a_home'))
             else:
                 return redirect(url_for('u_home'))
         else:
             flash('Invalid email or password. Please try again.', 'error')
-            # Clear password field by passing empty string to the login.html template
-            return render_template('login.html', email=email, password='')
+            return render_template('login.html')  # Render login page again on failed login
     return render_template('login.html')
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    return redirect(url_for('login'))
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -75,10 +74,6 @@ def a_home():
     # Check user session or authentication here before rendering the home page
     cur = conn.cursor()
     cur.execute("SELECT COUNT(*) FROM orders")
-    # c1=cur.fetchone()
-    print("-----------------------------------------------")
-    # print(c1)
-    print("-----------------------------------------------")
     orders_count = cur.fetchone()['COUNT(*)']
     cur.execute("SELECT COUNT(*) FROM users")
     users_count = cur.fetchone()['COUNT(*)']
@@ -87,10 +82,8 @@ def a_home():
     cur.close()
     return render_template('a_home.html', orders_count=orders_count, users_count=users_count, products_count=products_count)
 
-
 @app.route('/orders')
 def orders():
-    # Fetch orders from the database
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM orders')
     orders = cursor.fetchall()
@@ -99,7 +92,6 @@ def orders():
 
 @app.route('/users')
 def users():
-    # Fetch users from the database
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM users')
     users = cursor.fetchall()
@@ -108,13 +100,87 @@ def users():
 
 @app.route('/products')
 def products():
-    # Fetch products from the database
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM products')
     products = cursor.fetchall()
     cursor.close()
     return render_template('products.html', products=products)
 
+@app.route('/add_product', methods=['GET', 'POST'])
+def add_product():
+    if request.method == 'POST':
+        # Retrieve form data
+        name = request.form['name']
+        price = request.form['price']
+        description = request.form['description']
+        quantity = request.form['quantity']
+        category = request.form['category']
+        item = request.form['item']
+        pcode = request.form['pcode']
+        picture = request.form['picture']
+        date = request.form['date']
+
+        cursor = conn.cursor()
+        try:
+            cursor.execute("INSERT INTO products (name, price, description, quantity, category, item, pcode, picture, date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                           (name, price, description, quantity, category, item, pcode, picture, date))
+            conn.commit()
+            flash('Product added successfully!', 'success')
+            return redirect(url_for('products'))
+        except Exception as e:
+            flash('An error occurred while adding the product. Please try again.', 'error')
+            conn.rollback()
+        finally:
+            cursor.close()
+    return render_template('add_product.html')
+
+@app.route('/edit_product/<int:product_id>', methods=['GET', 'POST'])
+def edit_product(product_id):
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM products WHERE id = %s", (product_id,))
+    product = cursor.fetchone()
+    cursor.close()
+
+    if request.method == 'POST':
+        # Retrieve form data
+        name = request.form['name']
+        price = request.form['price']
+        description = request.form['description']
+        quantity = request.form['quantity']
+        category = request.form['category']
+        item = request.form['item']
+        pcode = request.form['pcode']
+        picture = request.form['picture']
+        date = request.form['date']
+
+        cursor = conn.cursor()
+        try:
+            cursor.execute("UPDATE products SET name = %s, price = %s, description = %s, quantity = %s, category = %s, item = %s, pcode = %s, picture = %s, date = %s WHERE id = %s",
+                           (name, price, description, quantity, category, item, pcode, picture, date, product_id))
+            conn.commit()
+            flash('Product updated successfully!', 'success')
+            return redirect(url_for('products'))
+        except Exception as e:
+            flash('An error occurred while updating the product. Please try again.', 'error')
+            conn.rollback()
+        finally:
+            cursor.close()
+    return render_template('edit_product.html', product=product)
+
+@app.route('/delete_product/<int:product_id>', methods=['GET', 'POST'])
+def delete_product(product_id):
+    if request.method == 'POST':
+        cursor = conn.cursor()
+        try:
+            cursor.execute("DELETE FROM products WHERE id = %s", (product_id,))
+            conn.commit()
+            flash('Product deleted successfully!', 'success')
+        except Exception as e:
+            flash('An error occurred while deleting the product. Please try again.', 'error')
+            conn.rollback()
+        finally:
+            cursor.close()
+    return redirect(url_for('products'))
 
 if __name__ == '__main__':
     app.run(debug=True)

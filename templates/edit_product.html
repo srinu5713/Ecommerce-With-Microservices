@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+</head>
+<body>
+    <h1>Edit Product</h1>
+    <form method="POST">
+        <label>Name:</label>
+        <input type="text" name="name" value="{{ product.name }}" required><br><br>
+        <label>Price:</label>
+        <input type="text" name="price" value="{{ product.price }}" required><br><br>
+        <label>Description:</label>
+        <textarea name="description" required>{{ product.description }}</textarea><br><br>
+        <label>Quantity:</label>
+        <input type="text" name="quantity" value="{{ product.quantity }}" required><br><br>
+        <label>Category:</label>
+        <input type="text" name="category" value="{{ product.category }}" required><br><br>
+        <label>Item:</label>
+        <input type="text" name="item" value="{{ product.item }}" required><br><br>
+        <label>Product Code:</label>
+        <input type="text" name="pcode" value="{{ product.pcode }}" required><br><br>
+        <label>Picture:</label>
+        <input type="text" name="picture" value="{{ product.picture }}" required><br><br>
+        <label>Date:</label>
+        <input type="text" name="date" value="{{ product.date }}" required><br><br>
+        <input type="submit" value="Update Product">
+    </form>
+</body>
+</html>
