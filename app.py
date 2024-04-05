@@ -80,8 +80,12 @@ def signup():
 
 @app.route('/u_home')
 def u_home():
-    # Check user session or authentication here before rendering the home page
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM products")
+    products = cur.fetchall()
+    cur.close()
     return render_template('u_home.html')
+
 
 @app.route('/a_home')
 def a_home():
