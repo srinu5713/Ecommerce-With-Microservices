@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Welcome to Admin Dashboard</h1>
+    <div class="summary">
+        <div class="card">
+            <a href="/orders">Orders</a>
+            <p>Total Orders: {{ orders_count }}</p>
+        </div>
+        <div class="card">
+            <a href="/users">Users</a>
+            <p>Total Users: {{ users_count }}</p>
+        </div>
+        <div class="card">
+            <a href="/products">Products</a>
+            <p>Total Products: {{ products_count }}</p>
+        </div>
+    </div>
+</body>
+</html>
