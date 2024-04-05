@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 import pymysql.cursors
 
 app = Flask(__name__)
@@ -13,8 +13,17 @@ conn = pymysql.connect(
     cursorclass=pymysql.cursors.DictCursor
 )
 
-a_is_logged_in=0
-u_is_logged_in=0
+@app.after_request
+def add_header(response):
+    """
+    Add headers to both force latest IE rendering engine or Chrome Frame,
+    and also to cache the rendered page for 10 minutes.
+    """
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    response.headers['Cache-Control'] = 'public, max-age=0'
+    return response
 
 @app.route('/')
 def index():
@@ -30,6 +39,7 @@ def login():
         user = cursor.fetchone()
         cursor.close()
         if user:
+            session['user_type'] = user['user_type']
             if user['user_type'] == 'Admin':
                 return redirect(url_for('a_home'))
             else:
@@ -41,6 +51,7 @@ def login():
 
 @app.route('/logout', methods=['POST'])
 def logout():
+    session.pop('user_type', None)
     return redirect(url_for('login'))
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -74,21 +85,22 @@ def u_home():
 
 @app.route('/a_home')
 def a_home():
+    # Check if the user is logged in as admin
+    if session.get('user_type') != 'Admin':
+        flash('Unauthorized access. Please log in as admin.', 'error')
+        return redirect(url_for('login'))
+    
     # Check user session or authentication here before rendering the home page
     cur = conn.cursor()
     cur.execute("SELECT COUNT(*) FROM orders")
-    # c1=cur.fetchone()
-    print("-----------------------------------------------")
-    # print(c1)
-    print("-----------------------------------------------")
     orders_count = cur.fetchone()['COUNT(*)']
     cur.execute("SELECT COUNT(*) FROM users")
     users_count = cur.fetchone()['COUNT(*)']
     cur.execute("SELECT COUNT(*) FROM products")
     products_count = cur.fetchone()['COUNT(*)']
     cur.close()
+    
     return render_template('a_home.html', orders_count=orders_count, users_count=users_count, products_count=products_count)
-
 
 @app.route('/orders')
 def orders():
@@ -116,7 +128,6 @@ def products():
     products = cursor.fetchall()
     cursor.close()
     return render_template('products.html', products=products)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
