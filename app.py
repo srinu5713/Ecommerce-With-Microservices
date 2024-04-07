@@ -8,7 +8,7 @@ app.secret_key = 'your_secret_key'  # Change this to a secure secret key
 conn = pymysql.connect(
     host='localhost',
     user='root',
-    password='wasd',
+    password='Chinu139*',
     database='ecom',
     cursorclass=pymysql.cursors.DictCursor
 )
@@ -22,10 +22,12 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+        session['email']=email
         cursor = conn.cursor()
         cursor.execute('SELECT username FROM users WHERE email = %s AND password = %s', (email, password))
         user = cursor.fetchone()
         cursor.close()
+        print(session)
         if user:
             cursor = conn.cursor()
             cursor.execute('SELECT user_type FROM users WHERE email = %s', (email,))
@@ -53,6 +55,9 @@ def signup():
             cursor.execute('INSERT INTO users (username, password, email, user_type) VALUES (%s, %s, %s, %s)', (name, password, email, user_type))
             conn.commit()
             flash('Signup successful! Please login.', 'success')
+            cursor.execute('SELECT * FROM users WHERE email = %s', (email,))
+            user = cursor.fetchone()
+            session['user_id']=user['user_id']
             return redirect(url_for('login'))
         except pymysql.err.IntegrityError as e:
             error_message = str(e)
@@ -115,6 +120,55 @@ def products():
     cursor.close()
     return render_template('products.html', products=products)
 
+<<<<<<< Updated upstream
+=======
+@app.route('/profile')
+def profile():
+    '''if 'user_id' not in session:
+        flash('Please login to access this page.', 'error')
+        return redirect(url_for('login'))'''
+    print(session)
+    email = session['email']
+    # Fetch user data from the database
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM users WHERE email = %s', (email,))
+    user = cursor.fetchone()
+    cursor.close()
+    return render_template('profile.html', user=user)
+
+@app.route('/edit_profile', methods=['POST'])
+def edit_profile():
+    if 'user_id' not in session:
+        flash('Please login to access this page.', 'error')
+        return redirect(url_for('login'))
+    user_id = session.get('user_id')
+    # Fetch form data
+    username = request.form['username']
+    email = request.form['email']
+    password = request.form['password']
+    # Update user data in the database
+    cursor = conn.cursor()
+    try:
+        cursor.execute('UPDATE users SET username = %s, email = %s, password = %s WHERE user_id = %s', (username, email, password, user_id))
+        conn.commit()
+        flash('Profile updated successfully!', 'success')
+    except Exception as e:
+        flash('An error occurred while updating the profile. Please try again.', 'error')
+        conn.rollback()
+    finally:
+        cursor.close()
+    return redirect(url_for('u_home'))
+
+@app.route('/cart')
+def cart():
+    # Render the cart page
+    return render_template('cart.html', username=session.get('username'))
+
+@app.route('/wishlist')
+def wishlist():
+    # Render the wishlist page
+    return render_template('wishlist.html', username=session.get('username'))
+>>>>>>> Stashed changes
 
 if __name__ == '__main__':
     app.run(debug=True)

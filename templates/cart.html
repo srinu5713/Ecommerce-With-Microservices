@@ -1,12 +1,9 @@
-<!-- orders.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orders</title>
-<<<<<<< Updated upstream
-=======
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <!-- Add Font Awesome for icons -->
@@ -143,59 +140,11 @@
             <button class="btn btn-outline-danger my-2 my-sm-0" type="submit"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </form>
     </nav>
->>>>>>> Stashed changes
 </head>
 <body>
-    <h1 class="arrange">Orders</h1>
-    <div class="search-container">
-        <input type="text" class="search-input" id="searchInput" placeholder="Search by product name...">
-        <button class="search-btn" onclick="searchProduct()"><i class="fas fa-search icon"></i>Search</button>
-    </div>
-    <table id="ordersTable">
-        <tr>
-            <th>ID</th>
-            <th>User ID</th>
-            <th>Product ID</th>
-            <th>Product Name</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Order Date</th>
-            <th>Expected Date</th>
-        </tr>
-        {% for order in orders %}
-        <tr>
-            <td>{{ order.id }}</td>
-            <td>{{ order.user_id }}</td>
-            <td>{{ order.product_id }}</td>
-            <td>{{ order.product_name }}</td>
-            <td>{{ order.quantity }}</td>
-            <td>{{ order.price }}</td>
-            <td>{{ order.order_date }}</td>
-            <td>{{ order.expected_date }}</td>
-        </tr>
-        {% endfor %}
-    </table>
 
-    <!-- Script to handle search functionality -->
-    <script>
-        function searchProduct() {
-            var input, filter, table, tr, td, i, txtValue;
-            input = document.getElementById("searchInput");
-            filter = input.value.toUpperCase();
-            table = document.getElementById("ordersTable");
-            tr = table.getElementsByTagName("tr");
-            for (i = 0; i < tr.length; i++) {
-                td = tr[i].getElementsByTagName("td")[3]; // Product Name column
-                if (td) {
-                    txtValue = td.textContent || td.innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
-                }
-            }
-        }
-    </script>
+    <div class="container1">
+        <h2>"Welcome to Cart Page"</h2>
+    </div>
 </body>
 </html>
