@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 import pymysql.cursors
 
 app = Flask(__name__)
@@ -120,8 +120,6 @@ def products():
     cursor.close()
     return render_template('products.html', products=products)
 
-<<<<<<< Updated upstream
-=======
 @app.route('/profile')
 def profile():
     '''if 'user_id' not in session:
@@ -168,7 +166,6 @@ def cart():
 def wishlist():
     # Render the wishlist page
     return render_template('wishlist.html', username=session.get('username'))
->>>>>>> Stashed changes
 
 if __name__ == '__main__':
     app.run(debug=True)
