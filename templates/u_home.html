@@ -171,6 +171,7 @@
                     const productId = button.dataset.productId;
                     const quantitySpan = document.getElementById(`quantity-${productId}`);
                     let quantity = parseInt(quantitySpan.textContent);
+                    console.log(quantity)
                     quantity++;
                     quantitySpan.textContent = quantity;
                 });
@@ -181,38 +182,47 @@
                     const productId = button.dataset.productId;
                     const quantitySpan = document.getElementById(`quantity-${productId}`);
                     let quantity = parseInt(quantitySpan.textContent);
+                    console.log(quantity)
                     if (quantity > 1) {
                         quantity--;
                         quantitySpan.textContent = quantity;
                     }
                 });
             });
+        });
 
-            // Add event listener to "Add to Cart" buttons
-            const addToCartButtons = document.querySelectorAll('.add-to-cart');
+        // Add event listener to "Add to Cart" buttons
+        const addToCartButtons = document.querySelectorAll('.add-to-cart');
             addToCartButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     const productId = button.dataset.productId;
-                    const quantity = document.getElementById(`quantity-${productId}`).textContent;
-                    // Send a request to Flask route to add the product to cart
-                    fetch(`/add_to_cart/${productId}/${quantity}`, {
-                        method: 'POST'
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            // Product added successfully, you can show a success message or update the UI as required
-                            console.log('Product added to cart successfully');
-                        } else {
-                            // Error handling
-                            console.error('Error adding product to cart');
+                    // Find the parent container of the button
+                    const parentContainer = button.closest('.btn-group');
+                    if (parentContainer) {
+                        // Find the quantity element within the parent container
+                        const quantityElement = parentContainer.querySelector('.quantity-value');
+                        if (quantityElement) {
+                            const quantity = parseInt(quantityElement.textContent);
+                            // Send a request to Flask route to add the product to cart
+                            fetch(`/add_to_cart/${productId}/${quantity}`, {
+                                method: 'POST'
+                            })
+                            .then(response => {
+                                if (response.ok) {
+                                    // Product added successfully, you can show a success message or update the UI as required
+                                    console.log('Product added to cart successfully');
+                                } else {
+                                    // Error handling
+                                    console.error('Error adding product to cart');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error adding product to cart:', error);
+                            });
                         }
-                    })
-                    .catch(error => {
-                        console.error('Error adding product to cart:', error);
-                    });
+                    }
                 });
             });
-        });
     </script>
 </body>
 </html>

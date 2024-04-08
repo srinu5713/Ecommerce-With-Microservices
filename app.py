@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import pymysql.cursors
+import datetime
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Change this to a secure secret key
@@ -22,16 +23,19 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        session['email']=email
         cursor = conn.cursor()
         cursor.execute('SELECT username FROM users WHERE email = %s AND password = %s', (email, password))
         user = cursor.fetchone()
         cursor.close()
         print(session)
         if user:
+            session['email']=email
             cursor = conn.cursor()
             cursor.execute('SELECT user_type FROM users WHERE email = %s', (email,))
             user_type = cursor.fetchone()['user_type']
+            cursor.execute('SELECT user_id FROM users WHERE email = %s', (email,))
+            user= cursor.fetchone()
+            session['user_id'] =user['user_id']
             cursor.close()
             if user_type == 'Admin':
                 return redirect(url_for('a_home'))
@@ -78,7 +82,7 @@ def a_home():
 def orders():
     # Fetch orders from the database
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM orders')
+    cursor.execute('SELECT * FROM orders WHERE user_id=%s',session['user_id'])
     orders = cursor.fetchall()
     cursor.close()
     return render_template('orders.html', orders=orders)
@@ -86,9 +90,9 @@ def orders():
 
 @app.route('/profile')
 def profile():
-    '''if 'user_id' not in session:
+    if 'user_id' not in session:
         flash('Please login to access this page.', 'error')
-        return redirect(url_for('login'))'''
+        return redirect(url_for('login'))
     print(session)
     email = session['email']
     # Fetch user data from the database
@@ -145,7 +149,7 @@ def fetch_product_by_id(product_id):
     
     return product_detail
 
-@app.route('/add_to_cart/<int:product_id>/<int:quantity>', methods=['POST'])
+@app.route('/add_to_cart/<int:product_id>/<int:quantity>', methods=['POST','GET'])
 def add_to_cart(product_id, quantity):
     # Fetch the product details based on the provided ID
     product = fetch_product_by_id(product_id)
@@ -159,6 +163,7 @@ def add_to_cart(product_id, quantity):
             'price': product['price'],
             'quantity': session['cart'].get(product_id, {}).get('quantity', 0) + quantity
         }
+        print(session['cart'])
         flash('Product added to cart successfully!', 'success')
     else:
         flash('Product not found!', 'error')
@@ -172,5 +177,48 @@ def cart():
     total_amount = sum(product['price'] * product['quantity'] for product in cart_products.values())
     return render_template('cart.html', cart_products=cart_products, total_amount=total_amount)
 
+@app.route('/place_order', methods=['POST'])
+def place_order():
+    # Receive cart details from the request
+    cart_data = session.get('cart')
+
+    if cart_data:
+        try:
+            # Connect to MySQL database
+            cursor = conn.cursor()
+
+            # Insert each cart item into the orders table
+            for product_id, quantity in cart_data.items():
+                cursor.execute("SELECT pName , price FROM products WHERE id = %s", (product_id,))
+                product_data = cursor.fetchone()
+                print(product_data)
+                if product_data:
+                    pName, price = product_data['pName'],product_data['price']
+                    print(pName,price)
+                    try:
+                        price = int(price)
+                        product_id=int(product_id)
+
+                    except ValueError:
+                        return f"Invalid price value: {price}", 500
+                    print(session['user_id'], product_id, pName, quantity, price, datetime.datetime.now(),datetime.date.today())
+                    cursor.execute("INSERT INTO orders (user_id, product_id, product_name, quantity, price, order_date, expected_date) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                                (session['user_id'], product_id, pName, quantity['quantity'], price, datetime.datetime.now(),datetime.date.today()+datetime.timedelta(days=3)))
+
+                else:
+                    return "Product not found", 404 
+
+
+            # Commit changes and close connection
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+            return "Order placed successfully", 200
+        except Exception as e:
+            return str(e), 500
+    else:
+        return "No data received", 400
+    
 if __name__ == '__main__':
     app.run(debug=True)
