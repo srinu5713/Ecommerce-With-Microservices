@@ -44,13 +44,15 @@ def login():
     return render_template('login.html')
 
 
+# Modify your Flask route to fetch product data
 @app.route('/u_home')
 def u_home():
     cur = conn.cursor()
     cur.execute("SELECT * FROM products")
     products = cur.fetchall()
     cur.close()
-    return render_template('u_home.html')
+    return render_template('u_home.html', products=products)
+
 
 
 @app.route('/a_home')
@@ -119,15 +121,56 @@ def edit_profile():
         cursor.close()
     return redirect(url_for('u_home'))
 
-@app.route('/cart')
-def cart():
-    # Render the cart page
-    return render_template('cart.html', username=session.get('username'))
-
 @app.route('/wishlist')
 def wishlist():
     # Render the wishlist page
     return render_template('wishlist.html', username=session.get('username'))
+
+@app.route('/product/<int:product_id>')
+def product_detail(product_id):
+    # Fetch the product details based on the provided ID (replace this with your actual data retrieval logic)
+    product = fetch_product_by_id(product_id)
+    if product:
+        return render_template('product_detail.html', product=product)
+    else:
+        return "Product not found", 404
+
+# Replace this with your actual data retrieval function
+def fetch_product_by_id(product_id):
+    # Placeholder logic to return a sample product for demonstration
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM products WHERE id=%s",product_id)
+    product_detail = cur.fetchone()
+    cur.close()
+    
+    return product_detail
+
+@app.route('/add_to_cart/<int:product_id>/<int:quantity>', methods=['POST'])
+def add_to_cart(product_id, quantity):
+    # Fetch the product details based on the provided ID
+    product = fetch_product_by_id(product_id)
+    if product:
+        # Initialize the cart if it doesn't exist in the session
+        if 'cart' not in session:
+            session['cart'] = {}
+        # Add the product to the cart or update its quantity
+        session['cart'][product_id] = {
+            'name': product['pName'],
+            'price': product['price'],
+            'quantity': session['cart'].get(product_id, {}).get('quantity', 0) + quantity
+        }
+        flash('Product added to cart successfully!', 'success')
+    else:
+        flash('Product not found!', 'error')
+    return redirect(url_for('cart'))
+
+# Create a route to display the cart
+@app.route('/cart')
+def cart():
+    # Fetch the products in the cart from the session
+    cart_products = session.get('cart', {})
+    total_amount = sum(product['price'] * product['quantity'] for product in cart_products.values())
+    return render_template('cart.html', cart_products=cart_products, total_amount=total_amount)
 
 if __name__ == '__main__':
     app.run(debug=True)

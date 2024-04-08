@@ -9,33 +9,90 @@
     <!-- Add Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+        }
+        h1 {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .quantity {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .quantity button {
+            margin: 0 5px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .quantity button:hover {
+            background-color: #0056b3;
+        }
+        .remove-item {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .remove-item:hover {
+            background-color: #c82333;
+        }
+        .total-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+        .total-amount {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .proceed-btn {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .proceed-btn:hover {
+            background-color: #218838;
+        }
+        .empty-cart {
+            text-align: center;
+            font-size: 18px;
+        }
         body {
             font-family: Arial, sans-serif;
             background-color: #ffe7b0;
             margin: 0;
             padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #fff;
-            border-radius: 5px;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
         }
         tr:hover {
             background-color: #f2f2f2;
@@ -144,7 +201,88 @@
 <body>
 
     <div class="container1">
-        <h2>"Welcome to Cart Page"</h2>
+        <h1>Cart</h1>
+        {% if cart_products %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product_id, product in cart_products.items() %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>₹{{ product.price }}</td>
+                            <td>
+                                <div class="quantity">
+                                    <button class="btn decrement" data-product-id="{{ product_id }}"><i class="fas fa-minus"></i></button>
+                                    <span class="quantity-value">{{ product.quantity }}</span>
+                                    <button class="btn increment" data-product-id="{{ product_id }}"><i class="fas fa-plus"></i></button>
+                                </div>
+                            </td>
+                            <td>₹{{ product.price * product.quantity }}</td>
+                            <td><button class="btn remove-item" data-product-id="{{ product_id }}"><i class="fas fa-trash-alt"></i> Remove</button></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="total-section">
+                <div>
+                    <h4>Total Amount:</h4>
+                    <span class="total-amount">₹{{ total_amount }}</span>
+                </div>
+                <a href="/checkout" class="btn proceed-btn">Proceed to Checkout</a>
+            </div>
+        {% else %}
+            <p class="empty-cart">Your cart is empty.</p>
+        {% endif %}
     </div>
+
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const decrementButtons = document.querySelectorAll('.decrement');
+            const incrementButtons = document.querySelectorAll('.increment');
+            const removeButtons = document.querySelectorAll('.remove-item');
+
+            decrementButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const productId = button.dataset.productId;
+                    const quantityElement = document.querySelector(`.quantity-value[data-product-id="${productId}"]`);
+                    let quantity = parseInt(quantityElement.textContent);
+                    if (quantity > 1) {
+                        quantity--;
+                        quantityElement.textContent = quantity;
+                    }
+                });
+            });
+
+            incrementButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const productId = button.dataset.productId;
+                    const quantityElement = document.querySelector(`.quantity-value[data-product-id="${productId}"]`);
+                    let quantity = parseInt(quantityElement.textContent);
+                    quantity++;
+                    quantityElement.textContent = quantity;
+                });
+            });
+
+            removeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const productId = button.dataset.productId;
+                    // Optionally, you can send a request to remove the product from the cart
+                    // and then update the UI accordingly
+                    button.closest('tr').remove(); // Remove the entire row from the table
+                });
+            });
+        });
+    </script>
 </body>
 </html>
