@@ -197,7 +197,9 @@
             Welcome, {{ username }}
         </span>
         {% endif %}
-        <a href="/place_order" class="btn proceed-btn" id="place-order-btn">Place Order & Checkout</a>
+        <form class="form-inline my-2 my-lg-0" action="/logout" method="post">
+            <button class="btn btn-outline-danger my-2 my-sm-0" type="submit"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </form>
     </nav>
 </head>
 <body>
