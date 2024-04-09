@@ -21,7 +21,7 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     session['cart'].clear()
-    print(session['cart'])
+    error_message = False
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -29,25 +29,28 @@ def login():
         cursor.execute('SELECT username FROM users WHERE email = %s AND password = %s', (email, password))
         user = cursor.fetchone()
         cursor.close()
-        print(session)
         if user:
-            session['email']=email
+            session['email'] = email
             cursor = conn.cursor()
             cursor.execute('SELECT user_type FROM users WHERE email = %s', (email,))
             user_type = cursor.fetchone()['user_type']
             cursor.execute('SELECT user_id FROM users WHERE email = %s', (email,))
-            user= cursor.fetchone()
-            session['user_id'] =user['user_id']
+            user = cursor.fetchone()
+            session['user_id'] = user['user_id']
             cursor.close()
             if user_type == 'Admin':
                 return redirect(url_for('a_home'))
             else:
                 return redirect(url_for('u_home'))
         else:
-            flash('Invalid email or password. Please try again.', 'error')
-            # Clear password field by passing empty string to the login.html template
-            return render_template('login.html', email=email, password='')
-    return render_template('login.html')
+            error_message = True
+    return render_template('login.html', error_message=error_message)
+
+@app.route('/logout', methods=['GET','POST'])
+def logout():
+    # Clear the user session
+    session.pop('user_id', None)
+    return redirect(url_for('login'))
 
 
 # Modify your Flask route to fetch product data

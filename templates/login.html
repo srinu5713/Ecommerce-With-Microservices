@@ -65,8 +65,12 @@
                 Login
             </div>
             <div class="card-body">
+                <!-- Error message -->
+                <div id="error-message" class="alert alert-danger" style="display: none;">
+                    Invalid email or password. Please try again.
+                </div>
                 <!-- Login form -->
-                <form action="/login" method="post">
+                <form id="login-form" action="/login" method="post">
                     <div class="form-group">
                         <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
                     </div>
@@ -79,5 +83,16 @@
             </div>
         </div>
     </div>
+
+    <!-- JavaScript to display error message -->
+    <script>
+        // Get the error message element
+        var errorMessage = document.getElementById('error-message');
+
+        // Check if the login form contains any error message
+        if ({{ error_message|tojson }}) {
+            errorMessage.style.display = 'block';
+        }
+    </script>
 </body>
 </html>
