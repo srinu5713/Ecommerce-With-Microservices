@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orders</title>
+    <title>Wishlist</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <!-- Add Font Awesome for icons -->
@@ -11,104 +11,53 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #ffe7b0;
+            background-color: #f8e28a;
             margin: 0;
             padding: 20px;
+        }
+        .container1 {
+            background-color: #f8f9f7;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         h1 {
             text-align: center;
             margin-bottom: 20px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #fff;
-            border-radius: 5px;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+        th {
+            background-color: #007bff;
+            color: #fff;
         }
         th, td {
             padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        tr:hover {
-            background-color: #f2f2f2;
-        }
         .btn {
-            display: inline-block;
-            background-color: #007bff;
-            color: #fff;
-            padding: 8px 16px;
             border-radius: 4px;
-            text-decoration: none;
-            margin-right: 10px;
-            transition: background-color 0.3s ease;
-        }
-        .btn:hover {
-            background-color: #0056b3;
-        }
-        .search-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .search-input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-right: 10px;
-        }
-        .search-btn {
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .search-btn:hover {
-            background-color: #218838;
-        }
-        .icon {
-            margin-right: 5px;
-        }
-        .navbar {
-            background-color: #fff; /* Change navbar background color */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Add a subtle shadow */
-        }
-        .navbar-brand {
-            font-weight: bold;
-            color: #333; /* Change navbar brand text color */
-        }
-        .navbar-nav .nav-link {
-            color: #555; /* Change navbar links text color */
-        }
-        .navbar-text {
-            color: #888; /* Change navbar text color */
         }
         .btn-outline-danger {
             color: #dc3545;
-            border-color: #dc3545; /* Change button outline color */
+            border-color: #dc3545;
         }
         .btn-outline-danger:hover {
             color: #fff;
-            background-color: #dc3545; /* Change button hover background color */
-            border-color: #dc3545; /* Change button hover border color */
+            background-color: #dc3545;
+            border-color: #dc3545;
         }
-        .arrange {
-            padding-top: 1cm;
+        .btn-outline-secondary {
+            color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-outline-secondary:hover {
+            color: #fff;
+            background-color: #6c757d;
+            border-color: #6c757d;
         }
     </style>
-    <!-- Add Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>  
+<body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="/u_home">
             <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" width="100" height="50" class="d-inline-block align-top">
@@ -140,10 +89,39 @@
             <button class="btn btn-outline-danger my-2 my-sm-0" type="submit"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </form>
     </nav>
-</head>  
-<body>
-    <div class="container1">
-        <h2>"Welcome to Wishlist Page"</h2>
+    <div class="container1 mt-5">
+        <h1>My Wishlist</h1>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in wishlist_items %}
+                        <tr>
+                            <td>{{ item.product_id }}</td>
+                            <td>{{ item.product_name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>
+                                <form action="{{ url_for('remove_from_wishlist', product_id=item.product_id) }}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i> Remove</button>
+                                </form>
+                                <form action="{{ url_for('add_to_cart', product_id=item.product_id, quantity=1) }}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </body>
 </html>

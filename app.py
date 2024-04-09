@@ -84,7 +84,7 @@ def a_home():
 def orders():
     # Fetch orders from the database
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM orders WHERE user_id=%s',session['user_id'])
+    cursor.execute('SELECT * FROM orders WHERE user_id=%s',int(session['user_id']))
     orders = cursor.fetchall()
     cursor.close()
     return render_template('orders.html', orders=orders)
@@ -126,11 +126,6 @@ def edit_profile():
     finally:
         cursor.close()
     return redirect(url_for('u_home'))
-
-@app.route('/wishlist')
-def wishlist():
-    # Render the wishlist page
-    return render_template('wishlist.html', username=session.get('username'))
 
 @app.route('/product/<int:product_id>')
 def product_detail(product_id):
@@ -245,6 +240,63 @@ def place_order():
             return str(e), 500
     else:
         return "No data received", 400
+    
+@app.route('/wishlist/<product_id>', methods=['POST', 'GET'])
+def add_to_wishlist(product_id):
+    # Fetch the product details based on the provided ID
+    product = fetch_product_by_id(product_id)
+    if product:
+        print("Entered Wishlist Add")
+        cur = conn.cursor()
+        try:
+            print("Entry")
+            cur.execute("SELECT * FROM products WHERE id=%s", product_id)
+            product = cur.fetchall()
+            print("----------------")
+            print(session['user_id'], product_id, product[0]['pName'], product[0]['quantity'])
+            print("----------------")
+            cur.execute("INSERT INTO wishlist (user_id, product_id, product_name, quantity) VALUES (%s, %s, %s, %s)", (int(session['user_id']), product_id, product[0]['pName'], product[0]['quantity']))
+            conn.commit()
+            print("Committed")
+            flash('Product added to wishlist successfully!', 'success')
+        except Exception as e:
+            print('Error')
+            flash('An error occurred while adding the product to the wishlist. Please try again.', 'error')
+            conn.rollback()
+        finally:
+            cur.close()
+            # conn.close()  # Do not close the connection here, as it's being used in wishlist_page function
+    else:
+        flash('Product not found!', 'error')
+    return redirect(url_for('wishlist'))
+
+@app.route('/wishlist', methods=['POST', 'GET'])
+def wishlist():
+    print("---------------------")
+    # Fetch the user's wishlist from the database
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM wishlist WHERE user_id = %s", (session['user_id'],))
+    wishlist_items = cursor.fetchall()
+    print(wishlist_items)
+    cursor.close()
+    return render_template('wishlist.html', wishlist_items=wishlist_items)
+
+@app.route('/remove_from_wishlist/<int:product_id>', methods=['POST'])
+def remove_from_wishlist(product_id):
+    # Remove the product from the user's wishlist
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM wishlist WHERE user_id = %s AND product_id = %s", (session['user_id'], product_id))
+        conn.commit()
+        flash('Product removed from wishlist successfully!', 'success')
+    except Exception as e:
+        flash('An error occurred while removing the product from the wishlist. Please try again.', 'error')
+        conn.rollback()
+    finally:
+        cursor.close()
+    return redirect(url_for('wishlist'))
+    
+
     
 if __name__ == '__main__':
     app.run(debug=True)

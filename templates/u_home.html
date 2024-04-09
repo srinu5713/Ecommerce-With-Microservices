@@ -57,7 +57,7 @@
         }
         .card-img-top {
             height: 450px; /* Set a fixed height for the card images */
-            width: auto; /* Let the width adjust to maintain aspect ratio */
+            width: 450px; /* Let the width adjust to maintain aspect ratio */
             border-radius: 10px 10px 0 0;
             display: block; 
             margin: auto;
@@ -138,7 +138,8 @@
                                     <i class="fas fa-shopping-cart"></i>
                                     <span class="sr-only">Add to Cart</span> <!-- Visually hidden text -->
                                     <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                                </a>                                
+                                </a> 
+                                <a href="/wishlist/{{ product.id }}" class="btn btn-sm btn-outline-secondary"><i class="fa fa-heart"></i></a>                               
                                 <span class="text-success d-none added-message">Added to Cart</span>
                             </div>
                             <div class="quantity">
