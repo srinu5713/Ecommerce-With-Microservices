@@ -20,6 +20,8 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    session['cart'].clear()
+    print(session['cart'])
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -149,7 +151,7 @@ def fetch_product_by_id(product_id):
     
     return product_detail
 
-@app.route('/add_to_cart/<int:product_id>/<int:quantity>', methods=['POST','GET'])
+@app.route('/add_to_cart/<product_id>/<quantity>', methods=['POST','GET'])
 def add_to_cart(product_id, quantity):
     # Fetch the product details based on the provided ID
     product = fetch_product_by_id(product_id)
@@ -157,17 +159,41 @@ def add_to_cart(product_id, quantity):
         # Initialize the cart if it doesn't exist in the session
         if 'cart' not in session:
             session['cart'] = {}
+        
         # Add the product to the cart or update its quantity
         session['cart'][product_id] = {
             'name': product['pName'],
             'price': product['price'],
-            'quantity': session['cart'].get(product_id, {}).get('quantity', 0) + quantity
+            'quantity': session['cart'].get(product_id, {}).get('quantity', 0) + int(quantity)
         }
         print(session['cart'])
         flash('Product added to cart successfully!', 'success')
     else:
         flash('Product not found!', 'error')
     return redirect(url_for('cart'))
+
+
+from flask import request, jsonify
+
+@app.route('/remove_from_cart/<product_id>', methods=['POST','GET'])
+def remove_from_cart(product_id):
+    try:
+        # Get the user's cart data from the session
+        cart = session.get('cart', {})
+        # Check if the product exists in the cart
+        if product_id in cart:
+            # Remove the product from the cart
+            del cart[product_id]
+            session['cart'] = cart  # Update the cart data in the session
+            
+            # Optionally, you can also remove the product from the database cart if needed
+            
+            return jsonify({'message': 'Product removed from cart successfully'}), 200
+        else:
+            return jsonify({'error': 'Product not found in cart'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 # Create a route to display the cart
 @app.route('/cart')

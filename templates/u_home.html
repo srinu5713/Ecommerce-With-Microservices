@@ -134,18 +134,25 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group">
                                 <a href="/product/{{ product.id }}" class="btn btn-sm btn-outline-secondary"><i class="fas fa-eye"></i> View</a>
-                                <button type="button" class="btn btn-sm btn-outline-secondary add-to-cart" data-product-id="{{ product.id }}">
-                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                <a href="#" class="btn btn-sm btn-outline-secondary add-to-cart" data-product-id="{{ product.id }}">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    <span class="sr-only">Add to Cart</span> <!-- Visually hidden text -->
                                     <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                                </button>
+                                </a>                                
                                 <span class="text-success d-none added-message">Added to Cart</span>
                             </div>
                             <div class="quantity">
-                                <button class="btn btn-sm btn-outline-secondary decrement" data-product-id="{{ product.id }}"><i class="fas fa-minus"></i></button>
+                                <button class="btn btn-sm btn-outline-secondary decrement" data-product-id="{{ product.id }}">
+                                    <i class="fas fa-minus"></i>
+                                    <span class="sr-only">Decrease quantity</span> <!-- Visually hidden text -->
+                                </button>
                                 <span class="mx-2 quantity-value" id="quantity-{{ product.id }}">1</span>
-                                <button class="btn btn-sm btn-outline-secondary increment" data-product-id="{{ product.id }}"><i class="fas fa-plus"></i></button>
+                                <button class="btn btn-sm btn-outline-secondary increment" data-product-id="{{ product.id }}">
+                                    <i class="fas fa-plus"></i>
+                                    <span class="sr-only">Increase quantity</span> <!-- Visually hidden text -->
+                                </button>
                             </div>
-                        </div>
+                        </div>  
                         <div class="d-flex justify-content-between align-items-center mt-2">
                             <small class="text-muted">Price: ₹{{ product.price }}</small>
                             <small class="text-muted">Quantity: {{ product.quantity }}</small>
@@ -165,64 +172,83 @@
             // Add event listeners to increment and decrement buttons
             const incrementButtons = document.querySelectorAll('.increment');
             const decrementButtons = document.querySelectorAll('.decrement');
-
+    
             incrementButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     const productId = button.dataset.productId;
                     const quantitySpan = document.getElementById(`quantity-${productId}`);
                     let quantity = parseInt(quantitySpan.textContent);
-                    console.log(quantity)
+                    console.log(quantity);
                     quantity++;
                     quantitySpan.textContent = quantity;
                 });
             });
-
+    
             decrementButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     const productId = button.dataset.productId;
                     const quantitySpan = document.getElementById(`quantity-${productId}`);
                     let quantity = parseInt(quantitySpan.textContent);
-                    console.log(quantity)
+                    console.log(quantity);
                     if (quantity > 1) {
                         quantity--;
                         quantitySpan.textContent = quantity;
                     }
                 });
             });
-        });
-
-        // Add event listener to "Add to Cart" buttons
-        const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    
+            // Add event listener to "Add to Cart" buttons
+            const addToCartButtons = document.querySelectorAll('.add-to-cart');
             addToCartButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     const productId = button.dataset.productId;
-                    // Find the parent container of the button
-                    const parentContainer = button.closest('.btn-group');
-                    if (parentContainer) {
-                        // Find the quantity element within the parent container
-                        const quantityElement = parentContainer.querySelector('.quantity-value');
-                        if (quantityElement) {
-                            const quantity = parseInt(quantityElement.textContent);
-                            // Send a request to Flask route to add the product to cart
-                            fetch(`/add_to_cart/${productId}/${quantity}`, {
-                                method: 'POST'
-                            })
-                            .then(response => {
-                                if (response.ok) {
-                                    // Product added successfully, you can show a success message or update the UI as required
-                                    console.log('Product added to cart successfully');
-                                } else {
-                                    // Error handling
-                                    console.error('Error adding product to cart');
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error adding product to cart:', error);
-                            });
+                    const quantitySpan = document.getElementById(`quantity-${productId}`);
+                    let quantity = parseInt(quantitySpan.textContent);
+                    // Show loading spinner
+                    button.querySelector('.spinner-border').classList.remove('d-none');
+
+                    const variableType1= typeof productId;
+                    const variableType2= typeof quantity;
+
+                    console.log(variableType1)
+                    console.log(variableType2)
+
+                    if (!isNaN(productId) && !isNaN(quantity)) {
+                    
+                    // Send a request to Flask route to add the product to cart
+                    fetch(`/add_to_cart/${productId}/${quantity}`, {
+                        method: 'POST'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Hide loading spinner
+                            button.querySelector('.spinner-border').classList.add('d-none');
+                            
+                            // Show success message
+                            button.nextElementSibling.classList.remove('d-none');
+                            setTimeout(() => {
+                                // Hide success message after 2 seconds
+                                button.nextElementSibling.classList.add('d-none');
+                            }, 2000);
+                            
+                            console.log('Product added to cart successfully');
+                        } else {
+                            // Error handling
+                            console.error('Error adding product to cart');
                         }
-                    }
+                    })
+                    .catch(error => {
+                        console.error('Error adding product to cart:', error);
+                    });
+                }
+                else{
+                    console.error('Invalid productId or quantity:', productIdStr, quantitySpan.textContent);
+                }
                 });
+            
             });
-    </script>
+       
+        });
+    </script>    
 </body>
 </html>

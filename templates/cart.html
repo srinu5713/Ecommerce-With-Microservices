@@ -298,25 +298,52 @@
     });
 
     removeButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const productId = button.dataset.productId;
-            // Optionally, you can send a request to remove the product from the cart
-            // and then update the UI accordingly
-            console.log('Product ID:', productId)
-            const row = button.closest('tr');
-            row.remove(); // Remove the entire row from the table
-            updateTotal(productId, 0); // Update total with quantity as 0
-            saveCartData(); // Save cart data after removing item
-            const remainingTotalElements = document.querySelectorAll('.total');
-            if (remainingTotalElements.length === 0) {
-                // Set total amount to ₹0
-                const totalAmountElement = document.querySelector('.total-amount');
-                if (totalAmountElement) {
-                    totalAmountElement.textContent = '₹0';
-                }
+    button.addEventListener('click', async () => {
+        const productId = button.dataset.productId;
+        // Optionally, you can send a request to remove the product from the cart
+        // and then update the UI accordingly
+        console.log('Product ID:', productId);
+        const row = button.closest('tr');
+        row.remove(); // Remove the entire row from the table
+        updateTotal(productId, 0); // Update total with quantity as 0
+        
+        // Remove the product from localStorage
+        const cartData = JSON.parse(localStorage.getItem('cart'));
+        if (cartData && cartData[productId]) {
+            delete cartData[productId];
+            localStorage.setItem('cart', JSON.stringify(cartData));
+        }
+        
+        const remainingTotalElements = document.querySelectorAll('.total');
+        if (remainingTotalElements.length === 0) {
+            // Set total amount to ₹0
+            const totalAmountElement = document.querySelector('.total-amount');
+            if (totalAmountElement) {
+                totalAmountElement.textContent = '₹0';
             }
+        }
+        
+        // Send a request to the server to update cart data
+        try {
+            const response = await fetch(`/remove_from_cart/${productId}`, {
+                method: 'POST'
+            });
+            if (response.ok) {
+                console.log('Product removed from cart successfully');
+            } else {
+                console.error('Error removing product from cart');
+                // If there's an error, you can optionally revert the changes in the UI
+                // and show an error message to the user
+            }
+        } catch (error) {
+            console.error('Error removing product from cart:', error);
+            // Handle network errors or other exceptions
+            // You can optionally revert the changes in the UI and show an error message to the user
+        }
         });
     });
+
+
 
     function updateTotal(productId, quantity) {
         const priceElement = document.querySelector(`.price[data-product-id="${productId}"]`);
