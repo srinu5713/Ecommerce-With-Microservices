@@ -71,7 +71,7 @@ CREATE TABLE `orders` (
   CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
   CONSTRAINT `orders_ibfk_3` FOREIGN KEY (`product_name`) REFERENCES `products` (`pName`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -80,7 +80,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,4,1,'iPhone 12 Pro',2,999,'2024-04-05 09:46:24','2024-04-10'),(2,4,3,'Sony PlayStation 5',1,499,'2024-04-05 09:46:24','2024-04-12'),(3,5,2,'Samsung Galaxy S21 Ultra',1,1199,'2024-04-05 09:46:24','2024-04-15'),(4,6,4,'Apple MacBook Pro 13\"',1,1299,'2024-04-05 09:46:24','2024-04-20'),(5,6,5,'DJI Mavic Air 2',1,799,'2024-04-05 09:46:24','2024-04-25');
+INSERT INTO `orders` VALUES (1,4,1,'iPhone 12 Pro',2,999,'2024-04-05 09:46:24','2024-04-10'),(2,4,3,'Sony PlayStation 5',1,499,'2024-04-05 09:46:24','2024-04-12'),(3,5,2,'Samsung Galaxy S21 Ultra',1,1199,'2024-04-05 09:46:24','2024-04-15'),(4,6,4,'Apple MacBook Pro 13\"',1,1299,'2024-04-05 09:46:24','2024-04-20'),(5,6,5,'DJI Mavic Air 2',1,799,'2024-04-05 09:46:24','2024-04-25'),(6,7,1,'iPhone 12 Pro',3,109900,'2024-04-08 17:43:43','2024-04-08'),(7,7,2,'Samsung Galaxy S21 Ultra',2,72999,'2024-04-09 10:17:13','2024-04-12'),(8,7,4,'Apple MacBook Pro 13\"',1,102999,'2024-04-09 10:17:13','2024-04-12'),(9,7,5,'DJI Mavic Air 2',1,96999,'2024-04-09 10:17:13','2024-04-12'),(10,7,1,'iPhone 12 Pro',2,109900,'2024-04-09 13:58:51','2024-04-12');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -101,7 +101,8 @@ CREATE TABLE `products` (
   `picture_url` varchar(255) NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `pName` (`pName`)
+  KEY `pName` (`pName`),
+  KEY `idx_picture_url` (`picture_url`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -140,8 +141,37 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (4,'test','123','saik@gmail.com','Cust'),(5,'Adolf Witler','war','HailGermany@1939.com','Cust'),(6,'Admin1','RamRam','RamisGod@earth.com','Admin'),(7,'Chitra','cool','chitteshkumar13@gmail.com','Cust');
+INSERT INTO `users` VALUES (4,'test','123','saik@gmail.com','Cust'),(5,'Adolf Witler','war','HailGermany@1939.com','Cust'),(6,'Admin1','RamRam','RamisGod@earth.com','Admin'),(7,'Chitra','123456','chitteshkumar13@gmail.com','Cust');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `wishlist`
+--
+
+DROP TABLE IF EXISTS `wishlist`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `wishlist` (
+  `user_id` int DEFAULT NULL,
+  `product_id` int NOT NULL,
+  `product_name` varchar(100) NOT NULL,
+  `quantity` int NOT NULL,
+  PRIMARY KEY (`product_id`),
+  KEY `product_name` (`product_name`),
+  CONSTRAINT `wishlist_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
+  CONSTRAINT `wishlist_ibfk_2` FOREIGN KEY (`product_name`) REFERENCES `products` (`pName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `wishlist`
+--
+
+LOCK TABLES `wishlist` WRITE;
+/*!40000 ALTER TABLE `wishlist` DISABLE KEYS */;
+INSERT INTO `wishlist` VALUES (7,2,'Samsung Galaxy S21 Ultra',40),(7,4,'Apple MacBook Pro 13\"',20);
+/*!40000 ALTER TABLE `wishlist` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -153,4 +183,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-04-07 19:27:33
+-- Dump completed on 2024-04-10 11:33:37
