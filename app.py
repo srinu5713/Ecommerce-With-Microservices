@@ -1,16 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import pymysql.cursors
 import datetime
+import os
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Change this to a secure secret key
 
 # MySQL Configuration
 conn = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='Chinu139*',
-    database='ecom',
+    host=os.getenv('DB_HOST', 'host.docker.internal'),
+    user=os.getenv('DB_USER', 'root'),
+    password=os.getenv('DB_PASSWORD'),
+    database=os.getenv('DB_NAME', 'ecom'),
     cursorclass=pymysql.cursors.DictCursor
 )
 
