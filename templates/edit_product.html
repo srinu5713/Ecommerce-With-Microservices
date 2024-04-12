@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+        input[type="text"],
+        input[type="datetime-local"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .fa-calendar-alt {
+            position: relative;
+            top: 4px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Edit Product</h1>
+    <form method="POST" onsubmit="return confirmUpdate()">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ product.pName }}" required><br><br>
+        
+        <label for="price">Price:</label>
+        <input type="text" id="price" name="price" value="{{ product.price }}" required><br><br>
+        
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required>{{ product.description }}</textarea><br><br>
+        
+        <label for="quantity">Quantity:</label>
+        <input type="text" id="quantity" name="quantity" value="{{ product.quantity }}" required><br><br>
+        
+        <label for="category">Category:</label>
+        <input type="text" id="category" name="category" value="{{ product.category }}" required><br><br>
+        
+        <label for="picture">Picture URL:</label>
+        <input type="text" id="picture" name="picture_url" value="{{ product.picture_url }}" required><br><br>
+
+        <input type="submit" value="Update Product">
+    </form>
+    <script>
+        function confirmUpdate() {
+            console.log("confirmUpdate function called");
+            var result = confirm("Are you sure you want to update the product details?");
+            return result;
+        }
+    </script>
+</body>
+</html>
