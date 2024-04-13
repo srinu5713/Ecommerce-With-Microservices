@@ -38,18 +38,32 @@
     <div class="container">
         <h2>Login</h2>
         <!-- Login form -->
-        <form action="/login" method="post">
+        <div id="error-message" class="alert alert-danger" style="display: none;">
+            Invalid email or password. Please try again.
+        </div>
+        <form id="login-form" action="/login" method="post">
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
             </div>
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
         <p>Don't have an account? <a href="/signup">Sign Up</a></p>
     </div>
+    
+    <!-- JavaScript to display error message -->
+    <script>
+        // Get the error message element
+        var errorMessage = document.getElementById('error-message');
+
+        // Check if the login form contains any error message
+        if ({{ error_message|tojson }}) {
+            errorMessage.style.display = 'block';
+        }
+    </script>
 </body>
 </html>
