@@ -6,6 +6,17 @@ import os
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Change this to a secure secret key
 
+'''conn = pymysql.connect(
+    host='localhost',
+    user='root',
+    password='Chinu139*',
+    database='ecom',
+    cursorclass=pymysql.cursors.DictCursor,
+    pool_size=100,
+    chunking=False,
+    autocommit=False
+)'''
+
 # MySQL Configuration   (password**)
 conn = pymysql.connect(
     host=os.getenv('DB_HOST', 'localhost'),
@@ -112,10 +123,16 @@ def a_home():
 @app.route('/orders')
 def orders():
     # Fetch orders from the database
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM orders WHERE user_id=%s',int(session['user_id']))
-    orders = cursor.fetchall()
-    cursor.close()
+    if 'user_id' not in session:
+            flash('User session not found. Please log in.', 'error')
+            return redirect(url_for('login'))
+    cur1 = conn.cursor()
+    print(session['user_id'],type(session['user_id']))
+    cur1.execute('SELECT * FROM orders WHERE user_id=%s',(session['user_id'],))
+    print("Hello...")
+    orders = cur1.fetchall()
+    print(orders)
+    cur1.close()
     return render_template('orders.html', orders=orders)
 
 @app.route('/orders_u')
