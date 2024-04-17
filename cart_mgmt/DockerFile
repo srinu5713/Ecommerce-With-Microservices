@@ -2,7 +2,7 @@
 FROM python:3.8-slim
 
 # Set the working directory in the container
-WORKDIR /order_management
+WORKDIR /cart_management
 
 # Install dependencies
 COPY requirements.txt .
@@ -11,14 +11,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application files
 COPY app.py .
 
-# Copy template files
-COPY templates/u_home.html templates/
-COPY templates/orders.html templates/
-
-# Copy static files
-COPY static/logo.png static/
-COPY static/styles.css static/
-
+COPY templates ./templates
+COPY static ./static
 
 ENV FLASK_APP=app.py
 

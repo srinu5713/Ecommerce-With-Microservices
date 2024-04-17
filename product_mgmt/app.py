@@ -32,7 +32,7 @@ def a_home():
 
 
 
-@app.route('/products')
+@app.route('/')
 def products():
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM products')

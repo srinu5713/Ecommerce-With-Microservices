@@ -11,18 +11,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application files
 COPY app.py .
 
-# Copy template files
-COPY templates/add_product.html templates/
-COPY templates/edit_product.html templates/
-COPY templates/a_home.html templates/
-COPY templates/product.html templates/
-COPY templates/product_detail.html templates/
-
-
-# Copy static files
-COPY static/logo.png static/
-COPY static/styles.css static/
-
+COPY templates ./templates
+COPY static ./static
 
 ENV FLASK_APP=app.py
 

@@ -15,7 +15,7 @@ conn = pymysql.connect(
     cursorclass=pymysql.cursors.DictCursor
 )
 
-@app.route('/u_home')
+@app.route('/')
 def u_home():
     cur = conn.cursor()
     cur.execute("SELECT * FROM products")
