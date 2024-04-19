@@ -15,7 +15,7 @@ services:
   mysql:
     image: mysql:latest
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=${DB_NAME}
     volumes:
-      - ./ecom.sql:/docker-entrypoint-initdb.d/ecom.sql  # Initial script
+      - ./user_mgmt.sql:/docker-entrypoint-initdb.d/user_mgmt.sql  # Initial script
