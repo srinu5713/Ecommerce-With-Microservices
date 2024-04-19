@@ -15,22 +15,6 @@ conn = pymysql.connect(
     cursorclass=pymysql.cursors.DictCursor
 )
 
-@app.route('/a_home')
-def a_home():
-    
-    # Check user session or authentication here before rendering the home page
-    cur = conn.cursor()
-    cur.execute("SELECT COUNT(*) FROM orders")
-    orders_count = cur.fetchone()['COUNT(*)']
-    cur.execute("SELECT COUNT(*) FROM users")
-    users_count = cur.fetchone()['COUNT(*)']
-    cur.execute("SELECT COUNT(*) FROM products")
-    products_count = cur.fetchone()['COUNT(*)']
-    cur.close()
-    
-    return render_template('a_home.html', orders_count=orders_count, users_count=users_count, products_count=products_count)
-
-
 
 @app.route('/')
 def products():

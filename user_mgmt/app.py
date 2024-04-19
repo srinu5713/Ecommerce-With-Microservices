@@ -86,27 +86,12 @@ def logout():
 # Modify your Flask route to fetch product data
 @app.route('/u_home')
 def u_home():
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM products")
-    products = cur.fetchall()
-    cur.close()
-    return render_template('u_home.html', products=products)
+    return render_template('u_home.html')
 
 
 @app.route('/a_home')
 def a_home():
-    
-    # Check user session or authentication here before rendering the home page
-    cur = conn.cursor()
-    cur.execute("SELECT COUNT(*) FROM orders")
-    orders_count = cur.fetchone()['COUNT(*)']
-    cur.execute("SELECT COUNT(*) FROM users")
-    users_count = cur.fetchone()['COUNT(*)']
-    cur.execute("SELECT COUNT(*) FROM products")
-    products_count = cur.fetchone()['COUNT(*)']
-    cur.close()
-    
-    return render_template('a_home.html', orders_count=orders_count, users_count=users_count, products_count=products_count)
+    return render_template('a_home.html')
 
 @app.route('/users')
 def users():

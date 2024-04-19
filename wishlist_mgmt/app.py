@@ -15,6 +15,8 @@ conn = pymysql.connect(
     cursorclass=pymysql.cursors.DictCursor
 )
 
+session['user_id']=7   # Restricted (Static)
+
 @app.route('/u_home')
 def u_home():
     cur = conn.cursor()
