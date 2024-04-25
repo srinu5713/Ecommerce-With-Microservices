@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-mgmt-deployment
+  labels:
+    app: product_mgmt
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: product_mgmt
+  template:
+    metadata:
+      labels:
+        app: product_mgmt
+    spec:
+      containers:
+      - name: product-mgmt-container
+        image: product_mgmt-app
+        ports:
+        - containerPort: 5000
+
+      - name: mysql-container
+        image: mysql:latest
+        ports:
+        - containerPort: 3306

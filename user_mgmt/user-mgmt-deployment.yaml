@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-mgmt-deployment
+  labels:
+    app: user_mgmt
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user_mgmt
+  template:
+    metadata:
+      labels:
+        app: user_mgmt
+    spec:
+      containers:
+      - name: user-mgmt-container
+        image: user_mgmt-app
+        ports:
+        - containerPort: 5000
+
+      - name: mysql-container
+        image: mysql:latest
+        ports:
+        - containerPort: 3306

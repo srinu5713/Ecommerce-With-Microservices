@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = "user_mgmt-app"
+        DOCKER_REGISTRY = "schetans"
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    docker.build "${DOCKER_REGISTRY}/${DOCKER_IMAGE}"
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    // Run tests, for example:
+                    sh 'echo "Running tests for user_mgmt"'
+                    // sh './run_tests.sh'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Push to Docker registry
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_credentials') {
+                        docker.image("${DOCKER_REGISTRY}/${DOCKER_IMAGE}").push('latest')
+                    }
+                    // Deploy using Kubernetes, kubectl, etc., if necessary
+                    sh 'kubectl apply -f user-mgmt-deployment.yaml'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'One or more stages completed'
+        }
+        failure {
+            echo 'The build failed.'
+        }
+    }
+}
