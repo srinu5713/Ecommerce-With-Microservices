@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=user_mgmt
+    volumes:
+      - ./user_mgmt.sql:/docker-entrypoint-initdb.d/user_mgmt.sql  # Initial script
+    expose:
+      - "3306"
+    networks:
+      test:
+        ipv4_address: 172.14.0.28
+
+  app:
+    build: .
+    environment:
+      - DB_PASSWORD=root
+      - DB_USER=root
+      - DB_HOST=172.14.0.28
+      - DB_NAME=user_mgmt
+      - DB_PORT=3306  # Removed extra space
+      - IP=172.14.0.2
+    depends_on:
+      - mysql
+    ports:
+      - "5000:5000"
+    networks:
+      test:
+        ipv4_address: 172.14.0.2
+
+networks:
+  test:
+    name: test
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.14.0.0/16

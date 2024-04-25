@@ -1,0 +1,6 @@
+Flask
+gunicorn
+pymysql
+Flask-Session
+python-dotenv
+cryptography

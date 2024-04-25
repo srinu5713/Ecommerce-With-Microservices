@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Additional custom styles */
+        /* Style the navbar */
+        .navbar {
+            background-color: #fff; /* Change navbar background color */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Add a subtle shadow */
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #333; /* Change navbar brand text color */
+        }
+        .navbar-nav .nav-link {
+            color: #555; /* Change navbar links text color */
+        }
+        .navbar-text {
+            color: #888; /* Change navbar text color */
+        }
+        .btn-outline-danger {
+            color: #dc3545;
+            border-color: #dc3545; /* Change button outline color */
+        }
+        .btn-outline-danger:hover {
+            color: #fff;
+            background-color: #dc3545; /* Change button hover background color */
+            border-color: #dc3545; /* Change button hover border color */
+        }
+        /* Style product cards */
+        .card {
+            border: none;
+            transition: box-shadow 0.3s;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Add shadow on hover */
+        }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .card-text {
+            color: #666; /* Change product description text color */
+            margin-bottom: 20px;
+        }
+        .card-img-top {
+            height: 450px; /* Set a fixed height for the card images */
+            width: 450px; /* Let the width adjust to maintain aspect ratio */
+            border-radius: 10px 10px 0 0;
+            display: block; 
+            margin: auto;
+            object-fit: cover;
+        }
+
+        .btn-outline-secondary {
+            color: #333;
+            border-color: #ccc; /* Change button outline color */
+            transition: all 0.3s;
+        }
+        .btn-outline-secondary:hover {
+            color: #fff;
+            background-color: #333; /* Change button hover background color */
+            border-color: #333; /* Change button hover border color */
+        }
+        /* Style increment and decrement buttons */
+        .quantity {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        .quantity button {
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" width="100" height="50" class="d-inline-block align-top">
+            C3S Ecommerce
+        </a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><i class="fas fa-shopping-cart"></i> Orders</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><i class="fas fa-shopping-cart"></i> Cart</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><i class="fas fa-user"></i> Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/wishlist"><i class="fas fa-heart"></i> Wishlist</a>
+                </li>
+            </ul>
+        </div>
+        <!-- Display username if logged in -->
+        {% if username %}
+        <span class="navbar-text">
+            Welcome, {{ username }}
+        </span>
+        {% endif %}
+        <form class="form-inline my-2 my-lg-0" action="/" method="post">
+            <button class="btn btn-outline-danger my-2 my-sm-0" type="submit"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </form>
+    </nav>
+
+    <div class="container1 mt-4">
+        <h2>Welcome to Home</h2>
+        <!-- Display products -->
+        <div class="row">
+            {% for product in products %}
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    <img src="{{ product.picture_url }}" class="card-img-top" alt="{{ product.pName }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.pName }}</h5>
+                        <p class="card-text">{{ product.description }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <a href="/wishlist/{{ product.id }}" class="btn btn-sm btn-outline-secondary"><i class="fa fa-heart"></i></a>                               
+                            </div>
+                            <div class="quantity">
+                                <button class="btn btn-sm btn-outline-secondary decrement" data-product-id="{{ product.id }}">
+                                    <i class="fas fa-minus"></i>
+                                    <span class="sr-only">Decrease quantity</span> <!-- Visually hidden text -->
+                                </button>
+                                <span class="mx-2 quantity-value" id="quantity-{{ product.id }}">1</span>
+                                <button class="btn btn-sm btn-outline-secondary increment" data-product-id="{{ product.id }}">
+                                    <i class="fas fa-plus"></i>
+                                    <span class="sr-only">Increase quantity</span> <!-- Visually hidden text -->
+                                </button>
+                            </div>
+                        </div>  
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <small class="text-muted">Price: ₹{{ product.price }}</small>
+                            <small class="text-muted">Quantity: {{ product.quantity }}</small>
+                            <small class="text-muted">Category: {{ product.category }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add event listeners to increment and decrement buttons
+            const incrementButtons = document.querySelectorAll('.increment');
+            const decrementButtons = document.querySelectorAll('.decrement');
+    
+            incrementButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const productId = button.dataset.productId;
+                    const quantitySpan = document.getElementById(`quantity-${productId}`);
+                    let quantity = parseInt(quantitySpan.textContent);
+                    console.log(quantity);
+                    quantity++;
+                    quantitySpan.textContent = quantity;
+                });
+            });
+    
+            decrementButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const productId = button.dataset.productId;
+                    const quantitySpan = document.getElementById(`quantity-${productId}`);
+                    let quantity = parseInt(quantitySpan.textContent);
+                    console.log(quantity);
+                    if (quantity > 1) {
+                        quantity--;
+                        quantitySpan.textContent = quantity;
+                    }
+                });
+            });
+    
+            // Add event listener to "Add to Cart" buttons
+            const addToCartButtons = document.querySelectorAll('.add-to-cart');
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const productId = button.dataset.productId;
+                    const quantitySpan = document.getElementById(`quantity-${productId}`);
+                    let quantity = parseInt(quantitySpan.textContent);
+                    // Show loading spinner
+                    button.querySelector('.spinner-border').classList.remove('d-none');
+
+                    const variableType1= typeof productId;
+                    const variableType2= typeof quantity;
+
+                    console.log(variableType1)
+                    console.log(variableType2)
+
+                    if (!isNaN(productId) && !isNaN(quantity)) {
+                    
+                    // Send a request to Flask route to add the product to cart
+                    fetch(`/add_to_cart/${productId}/${quantity}`, {
+                        method: 'POST'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Hide loading spinner
+                            button.querySelector('.spinner-border').classList.add('d-none');
+                            
+                            // Show success message
+                            button.nextElementSibling.classList.remove('d-none');
+                            setTimeout(() => {
+                                // Hide success message after 2 seconds
+                                button.nextElementSibling.classList.add('d-none');
+                            }, 2000);
+                            
+                            console.log('Product added to cart successfully');
+                        } else {
+                            // Error handling
+                            console.error('Error adding product to cart');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error adding product to cart:', error);
+                    });
+                }
+                else{
+                    console.error('Invalid productId or quantity:', productIdStr, quantitySpan.textContent);
+                }
+                });
+            
+            });
+       
+        });
+    </script>    
+</body>
+</html>

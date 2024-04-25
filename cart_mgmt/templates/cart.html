@@ -1,0 +1,403 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+        }
+        h1 {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .quantity {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .quantity button {
+            margin: 0 5px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .quantity button:hover {
+            background-color: #0056b3;
+        }
+        .remove-item {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .remove-item:hover {
+            background-color: #c82333;
+        }
+        .total-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+        .total-amount {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .proceed-btn {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .proceed-btn:hover {
+            background-color: #218838;
+        }
+        .empty-cart {
+            text-align: center;
+            font-size: 18px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffe7b0;
+            margin: 0;
+            padding: 20px;
+        }
+        tr:hover {
+            background-color: rgb(246, 185, 43);
+        }
+        .btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .search-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .search-btn {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .search-btn:hover {
+            background-color: #218838;
+        }
+        .icon {
+            margin-right: 5px;
+        }
+        .navbar {
+            background-color: #fff; /* Change navbar background color */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Add a subtle shadow */
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #333; /* Change navbar brand text color */
+        }
+        .navbar-nav .nav-link {
+            color: #555; /* Change navbar links text color */
+        }
+        .navbar-text {
+            color: #888; /* Change navbar text color */
+        }
+        .btn-outline-danger {
+            color: #dc3545;
+            border-color: #dc3545; /* Change button outline color */
+        }
+        .btn-outline-danger:hover {
+            color: #fff;
+            background-color: #dc3545; /* Change button hover background color */
+            border-color: #dc3545; /* Change button hover border color */
+        }
+        .arrange {
+            padding-top: 1cm;
+        }
+
+        .tb_style{
+            background-color: #2bc10d;
+        }
+    </style>
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/u_home">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" width="100" height="50" class="d-inline-block align-top">
+            C3S Ecommerce
+        </a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/orders"><i class="fas fa-shopping-cart"></i> Orders</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/cart"><i class="fas fa-shopping-cart"></i> Cart</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile"><i class="fas fa-user"></i> Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/wishlist"><i class="fas fa-heart"></i> Wishlist</a>
+                </li>
+            </ul>
+        </div>
+        <!-- Display username if logged in -->
+        {% if username %}
+        <span class="navbar-text">
+            Welcome, {{ username }}
+        </span>
+        {% endif %}
+        <form class="form-inline my-2 my-lg-0" action="/logout" method="post">
+            <button class="btn btn-outline-danger my-2 my-sm-0" type="submit"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </form>
+    </nav>
+</head>
+<body>
+
+    <div class="container1">
+        <h1>Cart</h1>
+        {% if cart_products %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody class="tb_style">
+                    {% for product_id, product in cart_products.items() %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td class="price" data-product-id="{{ product_id }}">₹{{ product.price }}</td>
+                            <td>
+                                <div class="quantity">
+                                    <button class="btn decrement" data-product-id="{{ product_id }}"><i class="fas fa-minus"></i></button>
+                                    <span class="quantity-value"  data-product-id="{{ product_id }}">{{ product.quantity }}</span>
+                                    <button class="btn increment" data-product-id="{{ product_id }}"><i class="fas fa-plus"></i></button>
+                                </div>
+                            </td>
+                            <td class="total" data-product-id="{{ product_id }}">₹{{ product.price * product.quantity }}</td>
+                            <td><button class="btn remove-item" data-product-id="{{ product_id }}"><i class="fas fa-trash-alt"></i> Remove</button></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="total-section">
+                <div>
+                    <h4>Total Amount:</h4>
+                    <span class="total-amount">₹{{ total_amount }}</span>
+                </div>
+                <form action="/place_order" method="POST" id="place-order-form">
+                    <button type="submit" class="btn proceed-btn" id="place-order-btn">Place Order & Checkout</button>
+                </form>
+                
+            </div>
+        {% else %}
+            <p class="empty-cart">Your cart is empty.</p>
+        {% endif %}
+    </div>
+
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <!-- JavaScript -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const decrementButtons = document.querySelectorAll('.decrement');
+    const incrementButtons = document.querySelectorAll('.increment');
+    const removeButtons = document.querySelectorAll('.remove-item');
+
+    console.log("Decrement Buttons:", decrementButtons);
+    console.log("Increment Buttons:", incrementButtons);
+    console.log("Remove Buttons:", removeButtons);
+
+    // Load cart data from localStorage when the page is loaded
+    loadCartData();
+
+    decrementButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const productId = button.dataset.productId;
+            const quantityElement = document.querySelector(`.quantity-value[data-product-id="${productId}"]`);
+            console.log('Quantity Element:', quantityElement);
+            if (quantityElement) {
+                let quantity = parseInt(quantityElement.textContent);
+                if (quantity > 1) {
+                    quantity--;
+                    quantityElement.textContent = quantity;
+                    updateTotal(productId, quantity);
+                    saveCartData(); // Save cart data after updating quantity
+                }
+            }
+        });
+    });
+
+    incrementButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const productId = button.dataset.productId;
+            console.log('Product ID:', productId)
+            const quantityElement = document.querySelector(`.quantity-value[data-product-id="${productId}"]`);
+            console.log('Quantity Element:', quantityElement);
+            if (quantityElement) {
+                let quantity = parseInt(quantityElement.textContent);
+                quantity++;
+                quantityElement.textContent = quantity;
+                updateTotal(productId, quantity);
+                saveCartData(); // Save cart data after updating quantity
+            }
+        });
+    });
+
+    removeButtons.forEach(button => {
+    button.addEventListener('click', async () => {
+        const productId = button.dataset.productId;
+        // Optionally, you can send a request to remove the product from the cart
+        // and then update the UI accordingly
+        console.log('Product ID:', productId);
+        const row = button.closest('tr');
+        row.remove(); // Remove the entire row from the table
+        updateTotal(productId, 0); // Update total with quantity as 0
+        
+        // Remove the product from localStorage
+        const cartData = JSON.parse(localStorage.getItem('cart'));
+        if (cartData && cartData[productId]) {
+            delete cartData[productId];
+            localStorage.setItem('cart', JSON.stringify(cartData));
+        }
+        
+        const remainingTotalElements = document.querySelectorAll('.total');
+        if (remainingTotalElements.length === 0) {
+            // Set total amount to ₹0
+            const totalAmountElement = document.querySelector('.total-amount');
+            if (totalAmountElement) {
+                totalAmountElement.textContent = '₹0';
+            }
+        }
+        
+        // Send a request to the server to update cart data
+        try {
+            const response = await fetch(`/remove_from_cart/${productId}`, {
+                method: 'POST'
+            });
+            if (response.ok) {
+                console.log('Product removed from cart successfully');
+            } else {
+                console.error('Error removing product from cart');
+                // If there's an error, you can optionally revert the changes in the UI
+                // and show an error message to the user
+            }
+        } catch (error) {
+            console.error('Error removing product from cart:', error);
+            // Handle network errors or other exceptions
+            // You can optionally revert the changes in the UI and show an error message to the user
+        }
+        });
+    });
+
+    function updateTotal(productId, quantity) {
+        const priceElement = document.querySelector(`.price[data-product-id="${productId}"]`);
+        console.log('Price Element:', priceElement);
+        const totalElement = document.querySelector(`.total[data-product-id="${productId}"]`);
+        console.log('Total Element:', totalElement);
+        if (priceElement && totalElement) {
+            const price = parseFloat(priceElement.textContent.replace('₹', ''));
+            const total = price * quantity;
+            totalElement.textContent = `₹${total.toFixed(2)}`;
+            updateTotalAmount();
+        }
+    }
+
+    function updateTotalAmount() {
+        const totalElements = document.querySelectorAll('.total');
+        let totalAmount = 0;
+        totalElements.forEach(element => {
+            totalAmount += parseFloat(element.textContent.replace('₹', ''));
+        });
+        const totalAmountElement = document.querySelector('.total-amount');
+        if (totalAmountElement) {
+            totalAmountElement.textContent = `₹${totalAmount.toFixed(2)}`;
+        }
+    }
+
+    function loadCartData() {
+        const cartData = JSON.parse(localStorage.getItem('cart'));
+        if (cartData) {
+            // Update quantity and total for each product in the cart
+            Object.keys(cartData).forEach(productId => {
+                const quantity = cartData[productId];
+                const quantityElement = document.querySelector(`.quantity-value[data-product-id="${productId}"]`);
+                if (quantityElement) {
+                    quantityElement.textContent = quantity;
+                    updateTotal(productId, quantity);
+                }
+            });
+        }
+    }
+
+    function saveCartData() {
+        const cartData = {};
+        const quantityElements = document.querySelectorAll('.quantity-value');
+        quantityElements.forEach(element => {
+            const productId = element.dataset.productId;
+            const quantity = parseInt(element.textContent);
+            cartData[productId] = quantity;
+        });
+        localStorage.setItem('cart', JSON.stringify(cartData));
+    }
+});
+
+    </script>
+</body>
+</html> 
